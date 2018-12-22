@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM alpine:3.8
 
 WORKDIR /usr/src/app
 
@@ -8,4 +8,3 @@ RUN tar xvf ./beerl-0.0.1.tar.gz -C /usr/local
 EXPOSE 9376
 
 CMD ["/usr/local/bin/beerl", "foreground"]
-
