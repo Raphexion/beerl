@@ -1,0 +1,39 @@
+%% -*- mode: erlang -*-
+
+%% Last byte in MAC is the device id,
+%% for example 0x13
+
+%% MOTOR_CONTROLLER,  .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x12}, .ip_addr = {192, 168, 17, 12}
+%% MOTOR_CONTROLLER,  .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x13}, .ip_addr = {192, 168, 17, 13}
+%% SENSOR_CONTROLLER, .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x14}, .ip_addr = {192, 168, 17, 14}
+%% SENSOR_CONTROLLER, .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x15}, .ip_addr = {192, 168, 17, 15}
+%% MOTOR_CONTROLLER,  .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x16}, .ip_addr = {192, 168, 17, 16}
+%% MOTOR_CONTROLLER,  .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x17}, .ip_addr = {192, 168, 17, 17}
+%% SENSOR_CONTROLLER, .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x18}, .ip_addr = {192, 168, 17, 18}
+%% SENSOR_CONTROLLER, .mac_address = {0x03, 0x12, 0x13, 0x10, 0x15, 0x19}, .ip_addr = {192, 168, 17, 19}
+
+[
+ {ablye, [{udp_server_port, 32001},
+	  {udp_server_module, mock_udp_server},
+	  {cmd_server_port, 4456},
+	  {ablyelog_port, 4478},
+	  {pattern_watchdog_sec, 10},
+	  {motor_speed, 7000},  %% 0-100 @ 100% duty ~ 7sec
+	  {device_id_map,
+	   #{
+	      %% Group A
+	      motor1 => {16#12, "192.168.0.12", 32000},
+	      motor2 => {16#13, "192.168.0.13", 32000},
+
+	      motor3 => {16#14, "192.168.0.14", 32000},
+	      motor4 => {16#15, "192.168.0.15", 32000},
+
+	      %% Group B
+	      motor5 => {16#16, "192.168.0.16", 32000},
+	      motor6 => {16#17, "192.168.0.17", 32000},
+
+	      motor7 => {16#18, "192.168.0.18", 32000},
+	      motor8 => {16#19, "192.168.0.19", 32000}
+	    }}
+	 ]}
+].
