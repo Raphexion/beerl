@@ -25,8 +25,9 @@ start_link() ->
 %%====================================================================
 
 init(_) ->
+    Uniq = float_to_list(rand:uniform(), [{decimals, 5}]),
     {ok, LSock} = gen_tcp:listen(?PORT, ?TCP_OPTIONS),
-    {ok, #{lsock => LSock}, 0}.
+    {ok, #{lsock => LSock, uniq => Uniq}, 0}.
 
 handle_call(What, _From, State) ->
     {reply, {error, What}, State}.
@@ -35,10 +36,10 @@ handle_cast(What, State) ->
     lager:warning("cast ~p not supported~n", [What]),
     {noreply, State}.
 
-handle_info(timeout, State=#{lsock := LSock}) ->
+handle_info(timeout, State=#{lsock := LSock, uniq := Uniq}) ->
     {ok, Sock} = gen_tcp:accept(LSock),
     lager:debug("new connection: ~p~n", [Sock]),
-    beerl_worker_sup:start_worker(Sock),
+    beerl_worker_sup:start_worker(Sock, Uniq),
     {noreply, State, 0};
 
 handle_info(What, State) ->

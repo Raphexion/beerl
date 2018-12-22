@@ -1,7 +1,7 @@
 -module(beerl_worker).
 -behaviour(gen_server).
 
--export([start_link/1]).
+-export([start_link/2]).
 
 -export([init/1,
 	 handle_call/3,
@@ -14,15 +14,15 @@
 %% API
 %% =============================================================================
 
-start_link(Sock) ->
-    gen_server:start_link(?MODULE, Sock, []).
+start_link(Sock, Uniq) ->
+    gen_server:start_link(?MODULE, {Sock, Uniq}, []).
 
 %% ====================================================================
 %% Behaviour
 %% ====================================================================
 
-init(Sock) ->
-    {ok, #{sock => Sock}, 500}.
+init({Sock, Uniq}) ->
+    {ok, #{sock => Sock, uniq => Uniq}, 500}.
 
 handle_call(What, _From, State) ->
     {reply, {error, What}, State}.
@@ -31,9 +31,9 @@ handle_cast(What, State) ->
     lager:warning("unhandle cast to beerl_worker ~p", [What]),
     {noreply, State}.
 
-handle_info(timeout, State=#{sock := Sock}) ->
+handle_info(timeout, State=#{sock := Sock, uniq := Uniq}) ->
     lager:debug("beerl_worker timeout"),
-    case do_recv(Sock) of
+    case do_recv(Sock, Uniq) of
 	ok ->
 	    {noreply, State, 100};
 	closed ->
@@ -57,11 +57,11 @@ code_change(_Vsn, State, _Extra) ->
 %% Private
 %% ====================================================================
 
-do_recv(Sock) ->
+do_recv(Sock, Uniq) ->
     case gen_tcp:recv(Sock, 0, 100) of
 	{ok, B} ->
 	    lager:debug("line from tcp/client: ~p~n", [B]),
-	    gen_tcp:send(Sock, B),
+	    gen_tcp:send(Sock, Uniq ++ "," ++ B),
 	    ok;
 
 	{error, enotconn} ->

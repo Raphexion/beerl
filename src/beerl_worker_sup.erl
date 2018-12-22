@@ -4,7 +4,7 @@
 -define(SERVER, ?MODULE).
 
 -export([start_link/0,
-	 start_worker/1]).
+	 start_worker/2]).
 
 -export([init/1]).
 
@@ -15,8 +15,8 @@
 start_link() ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, []).
 
-start_worker(Sock) ->
-    supervisor:start_child(?SERVER, [Sock]).
+start_worker(Sock, Uniq) ->
+    supervisor:start_child(?SERVER, [Sock, Uniq]).
 
 %%====================================================================
 %% Behaviour
